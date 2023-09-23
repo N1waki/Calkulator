@@ -6,13 +6,11 @@ public class Main {
     static class InvalidInputException extends Exception {
 
     }
-    public static BigDecimal scanDouble(String input) throws InvalidInputException {
-        for (int i = 0; i < input.length(); i++) {
-            if ((input.charAt(i) < '0' || input.charAt(i) > '9') && input.charAt(i) != '.') {
-                throw new InvalidInputException();
-            }
-        }
-        return BigDecimal.valueOf(Double.parseDouble(input));
+    public static boolean scanDouble(String input){
+        for (int i = 0; i < input.length(); i++)
+            if ((input.charAt(i) < '0' || input.charAt(i) > '9') && input.charAt(i) != '.') 
+                return false;
+        return true;
     }
         public static BigDecimal Calculate(BigDecimal num1, BigDecimal num2, String op){
         BigDecimal ans = BigDecimal.valueOf(0);
@@ -48,43 +46,39 @@ public class Main {
         }
         return noNulls;
     }
-    public static void main(String[] args) throws InvalidInputException {
-        Scanner reader = new Scanner(System.in);
-        boolean ifInputIsInvalid = true;
-        System.out.print("\nEnter first numbers: ");
-        String input = reader.next();
-        while (ifInputIsInvalid) {
-            try {
-                scanDouble(input);
-                ifInputIsInvalid = false;
-            } catch (InvalidInputException e) {
-                System.out.println("Input Error");
-                System.exit(0);
-            } catch (Exception e) {
-                e.printStackTrace();
+    public static BigDecimal getInputNumber(String message, Scanner scanner){
+        boolean ifInputIsValid = true;
+        String input  = "";
+        while (ifInputIsValid) {
+            System.out.print(message);
+            input = scanner.next();
+            ifInputIsValid = !scanDouble(input);
+            if (ifInputIsValid) {
+                System.out.println("You're fucking peace of shit");
             }
         }
-        BigDecimal num1 = scanDouble(input);
+        return BigDecimal.valueOf(Double.parseDouble(input));
+    }
+    public static void main(String[] args) {
+        Scanner reader = new Scanner(System.in);
+        BigDecimal num1 = getInputNumber("Enter first number: ", reader);
         while (true) {
             System.out.print("\nEnter an operator (+, -, *, /, ^, mod, log, f(finish), n(new), gr(groups): ");
             String op = reader.next();
             switch (op) {
                 case "n" -> {
-                    System.out.print("\nEnter first numbers: ");
-                    input = reader.next();
-                    num1 = scanDouble(input);
+                    num1 = getInputNumber("Enter first number: ", reader);
                 }
-                case "f" -> System.exit(0);
+                case "f" -> {
+                    reader.close();
+                    System.exit(0);
+                }
                 case "gr" -> {
+                    num1 = getInputNumber("Enter first number: ", reader);
                     Group(num1.intValue());
-                    System.out.print("\nEnter first numbers: ");
-                    input = reader.next();
-                    num1 = scanDouble(input);
                 }
                 case "+", "-", "*", "/", "^", "mod", "log" -> {
-                        System.out.print("\nEnter second numbers: ");
-                        input = reader.next();
-                        BigDecimal num2 = scanDouble(input);
+                        BigDecimal num2 = getInputNumber("Enter second number: ", reader);
                         BigDecimal result = Calculate(num1, num2, op);
                         System.out.print("\n" + Clear(num1.toString()) + " " + op + " " + Clear(num2.toString()) + " = " + Clear(result.toString()));
                         num1 = result;
